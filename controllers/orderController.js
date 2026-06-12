@@ -41,8 +41,11 @@ exports.createOrder = async (req, res, next) => {
     const shippingCost = subtotal >= 100 ? 0 : 9.99;
     const tax = Math.round(subtotal * 0.08 * 100) / 100;
     const total = Math.round((subtotal + shippingCost + tax) * 100) / 100;
-
+    // Generate order number before saving
+    const count = await Order.countDocuments();
+    const orderNumber = `RVN-${String(count + 1001).padStart(6, '0')}`;
     const order = await Order.create({
+      orderNumber,
       user: req.user._id,
       items: orderItems,
       shippingAddress,
